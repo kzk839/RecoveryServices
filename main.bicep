@@ -23,7 +23,7 @@ param resourceNamePrefix string
 // param dnsPrefix string
 
 @description('Size of the VM for the controller')
-param vmSize string = 'Standard_D2s_v5'
+param vmSize string = 'Standard_D2s_v3'
 
 @description('The location of resources such as templates and DSC modules that the script is dependent')
 param _artifactsLocation string = 'https://raw.githubusercontent.com/kzk839/RecoveryServices/master/'
@@ -64,7 +64,7 @@ param vmSize2 string = 'Standard_A2_v2'
 var vmName3 = '${resourceNamePrefix}-BKSvr'
 var nicName3 = '${resourceNamePrefix}-BKSvr-Nic'
 var ipAddressVm3 = '10.0.0.6'
-param vmSize3 string = 'Standard_D2s_v5'
+param vmSize3 string = 'Standard_D2s_v3'
 
 
 // var adBDCConfigurationModulesURL = uri(_artifactsLocation, 'DSC/ConfigureADBDC.ps1.zip')

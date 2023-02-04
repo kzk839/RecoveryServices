@@ -14,8 +14,7 @@ configuration CreateADPDC
 
     Import-DscResource -ModuleName xActiveDirectory, xStorage, xNetworking, PSDesiredStateConfiguration, xPendingReboot
     [System.Management.Automation.PSCredential ]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($Admincreds.UserName)", $Admincreds.Password)
-    #$Interface=Get-NetAdapter | Where Name -Like "Ethernet*"|Select-Object -First 1
-    $Interface=Get-NetAdapter | Where Name -Like "Ethernet"|Select-Object -First 1
+    $Interface=Get-NetAdapter | Where Name -Like "Ethernet*"|Select-Object -First 1
     $InterfaceAlias=$($Interface.Name)
 
     Set-NetFirewallProfile -Profile Domain, Public, Private -Enabled False
@@ -53,7 +52,7 @@ configuration CreateADPDC
 
         xDnsServerAddress DnsServerAddress
         {
-            Address        = '10.0.0.4'
+            Address        = '127.0.0.1'
             InterfaceAlias = $InterfaceAlias
             AddressFamily  = 'IPv4'
             DependsOn = "[WindowsFeature]DNS"
@@ -61,13 +60,13 @@ configuration CreateADPDC
 
         xWaitforDisk Disk2
         {
-            DiskNumber = 1
+            DiskNumber = 2
             RetryIntervalSec =$RetryIntervalSec
             RetryCount = $RetryCount
         }
 
         xDisk ADDataDisk {
-            DiskNumber = 1
+            DiskNumber = 2
             DriveLetter = "F"
             DependsOn = "[xWaitForDisk]Disk2"
         }
