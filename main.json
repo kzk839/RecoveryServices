@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.14.6.61914",
-      "templateHash": "2875106449220353025"
+      "templateHash": "8408810902868145019"
     }
   },
   "parameters": {
@@ -71,6 +71,7 @@
     "imagePublisher": "MicrosoftWindowsServer",
     "imageOffer": "WindowsServer",
     "imageSKU": "2019-Datacenter",
+    "asrImageSKU": "2016-Datacenter",
     "virtualNetworkName": "[format('{0}-VNET', parameters('resourceNamePrefix'))]",
     "virtualNetworkAddressRange": "10.0.0.0/16",
     "vmSubnetName": "Subnet",
@@ -91,7 +92,15 @@
     "vmName3": "[format('{0}-BKSvr', parameters('resourceNamePrefix'))]",
     "nicName3": "[format('{0}-BKSvr-Nic', parameters('resourceNamePrefix'))]",
     "ipAddressVm3": "10.0.0.6",
-    "vmSize3": "Standard_D2s_v3"
+    "vmSize3": "Standard_D2s_v3",
+    "vmName4": "[format('{0}-CSPSSvr', parameters('resourceNamePrefix'))]",
+    "nicName4": "[format('{0}-CSPSSvr-Nic', parameters('resourceNamePrefix'))]",
+    "ipAddressVm4": "10.0.0.7",
+    "vmSize4": "Standard_D2s_v3",
+    "vmName5": "[format('{0}-Migrated', parameters('resourceNamePrefix'))]",
+    "nicName5": "[format('{0}-Migrated', parameters('resourceNamePrefix'))]",
+    "ipAddressVm5": "10.0.0.8",
+    "vmSize5": "Standard_A2_v2"
   },
   "resources": [
     {
@@ -426,6 +435,136 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName3'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2022-07-01",
+      "name": "[variables('nicName4')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[variables('ipAddressVm4')]",
+              "subnet": {
+                "id": "[variables('vmSubnetRef')]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'vNet')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2022-11-01",
+      "name": "[variables('vmName4')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('vmSize4')]"
+        },
+        "osProfile": {
+          "computerName": "[variables('vmName4')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('imagePublisher')]",
+            "offer": "[variables('imageOffer')]",
+            "sku": "[variables('asrImageSKU')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "caching": "ReadOnly",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS"
+            }
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName4'))]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName4'))]",
+        "[resourceId('Microsoft.Resources/deployments', 'UpdateVNetDNS1')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2022-07-01",
+      "name": "[variables('nicName5')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[variables('ipAddressVm5')]",
+              "subnet": {
+                "id": "[variables('vmSubnetRef')]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'vNet')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2022-11-01",
+      "name": "[variables('vmName5')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('vmSize5')]"
+        },
+        "osProfile": {
+          "computerName": "[variables('vmName4')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('imagePublisher')]",
+            "offer": "[variables('imageOffer')]",
+            "sku": "[variables('asrImageSKU')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "caching": "ReadOnly",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS"
+            }
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName5'))]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName5'))]",
+        "[resourceId('Microsoft.Resources/deployments', 'UpdateVNetDNS1')]"
       ]
     },
     {

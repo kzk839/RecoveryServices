@@ -32,6 +32,7 @@ param artifactsLocationSasToken string = ''
 var imagePublisher = 'MicrosoftWindowsServer'
 var imageOffer = 'WindowsServer'
 var imageSKU = '2019-Datacenter'
+var asrImageSKU = '2016-Datacenter'
 var virtualNetworkName = '${resourceNamePrefix}-VNET'
 var virtualNetworkAddressRange = '10.0.0.0/16'
 var vmSubnetName = 'Subnet'
@@ -59,6 +60,15 @@ var nicName3 = '${resourceNamePrefix}-BKSvr-Nic'
 var ipAddressVm3 = '10.0.0.6'
 var vmSize3 = 'Standard_D2s_v3'
 
+var vmName4 = '${resourceNamePrefix}-CSPSSvr'
+var nicName4 = '${resourceNamePrefix}-CSPSSvr-Nic'
+var ipAddressVm4 = '10.0.0.7'
+var vmSize4 = 'Standard_D2s_v3'
+
+var vmName5 = '${resourceNamePrefix}-Migrated'
+var nicName5 = '${resourceNamePrefix}-Migrated'
+var ipAddressVm5 = '10.0.0.8'
+var vmSize5 = 'Standard_A2_v2'
 
 module CreateVNet './nestedtemplates/vnet.bicep' = {
   name: 'vNet'
@@ -408,4 +418,130 @@ resource virtualMachineExtension2 'Microsoft.Compute/virtualMachines/extensions@
       Password: adminPassword
     }
   }
+}
+
+resource CreateNIC4 'Microsoft.Network/networkInterfaces@2022-07-01' = {
+  name: nicName4
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          privateIPAllocationMethod: 'Static'
+          privateIPAddress: ipAddressVm4
+          subnet: {
+            id: vmSubnetRef
+          }
+        }
+      }
+    ]
+  }
+  dependsOn: [
+    CreateVNet
+  ]
+}
+
+resource CreateVM4 'Microsoft.Compute/virtualMachines@2022-11-01' = {
+  name: vmName4
+  location: location
+  properties: {
+    hardwareProfile: {
+      vmSize: vmSize4
+    }
+    osProfile: {
+      computerName: vmName4
+      adminUsername: adminUsername
+      adminPassword: adminPassword
+    }
+    storageProfile: {
+      imageReference: {
+        publisher: imagePublisher
+        offer: imageOffer
+        sku: asrImageSKU
+        version: 'latest'
+      }
+      osDisk: {
+        caching: 'ReadOnly'
+        createOption: 'FromImage'
+        managedDisk: {
+          storageAccountType: 'StandardSSD_LRS'
+        }
+      }
+    }
+    networkProfile: {
+      networkInterfaces: [
+        {
+          id: resourceId('Microsoft.Network/networkInterfaces', nicName4)
+        }
+      ]
+    }
+  }
+  dependsOn: [
+    CreateNIC4
+    UpdateVNetDNS1
+  ]
+}
+
+resource CreateNIC5 'Microsoft.Network/networkInterfaces@2022-07-01' = {
+  name: nicName5
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          privateIPAllocationMethod: 'Static'
+          privateIPAddress: ipAddressVm5
+          subnet: {
+            id: vmSubnetRef
+          }
+        }
+      }
+    ]
+  }
+  dependsOn: [
+    CreateVNet
+  ]
+}
+
+resource CreateVM5 'Microsoft.Compute/virtualMachines@2022-11-01' = {
+  name: vmName5
+  location: location
+  properties: {
+    hardwareProfile: {
+      vmSize: vmSize5
+    }
+    osProfile: {
+      computerName: vmName4
+      adminUsername: adminUsername
+      adminPassword: adminPassword
+    }
+    storageProfile: {
+      imageReference: {
+        publisher: imagePublisher
+        offer: imageOffer
+        sku: asrImageSKU
+        version: 'latest'
+      }
+      osDisk: {
+        caching: 'ReadOnly'
+        createOption: 'FromImage'
+        managedDisk: {
+          storageAccountType: 'StandardSSD_LRS'
+        }
+      }
+    }
+    networkProfile: {
+      networkInterfaces: [
+        {
+          id: resourceId('Microsoft.Network/networkInterfaces', nicName5)
+        }
+      ]
+    }
+  }
+  dependsOn: [
+    CreateNIC5
+    UpdateVNetDNS1
+  ]
 }
