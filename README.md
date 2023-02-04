@@ -18,6 +18,8 @@
 - _artifacts Location : 変更不要
 - Artifacts Location Sas Token : 空欄でよい
 
+![Alt text](2023-02-04_22h26_16.png)
+
 ## 概要
 
 Recovery Services ハンズオン用の Azure リソースをデプロイ
@@ -30,21 +32,31 @@ Recovery Services ハンズオン用の Azure リソースをデプロイ
   - DNS : ドメイン コントローラーを指定 (10.0.0.4)
 - Azure Bastion 用パブリック IP アドレス (prefix-bastion-ip)
 - Azure Bastion (prefix-bastion)
-- VM * 3
+- VM * 5
   - ドメイン コントローラー (prefix-DC) : 10.0.0.4
     - OS : Windows Server 2019 Datacenter
     - FW 無効化済み
-    - データ ディスク 128 GB (F ドライブ)
+    - データ ディスク : 128 GB (F ドライブ)
     - ドメイン名 : contoso.local (昇格済み)
     - VM サイズ : Standard_D2s_v3
   - RecoveryVM1 (prefix-RecVM1) : 10.0.0.5
     - OS : Windows Server 2019 Datacenter
-    - データ ディスク 128 GB (接続のみ)
+    - データ ディスク : 128 GB (接続のみ)
     - ドメイン contoso.local に参加済み
     - VM サイズ : Standard_A2_v2
   - BackupServer (prefix-BKSvr) : 10.0.0.6
     - OS : Windows Server 2019 Datacenter
-    - データ ディスク 128 GB (接続のみ)
+    - データ ディスク : 128GB (OS 内でフォーマットが必要)
     - ドメイン contoso.local に参加済み
     - VM サイズ : Standard_D2s_v3
-- 各 VM 用 NIC
+  - 構成/プロセス サーバー (prefix-CSPSSvr) : 10.0.0.7
+    - OS : Windows Server 2016 Datacenter
+    - データ ディスク : 128GB (OS 内でフォーマットが必要)
+    - ドメイン未参加
+    - VM サイズ : Standard_D2s_v3
+  - ASR 対象サーバー (prefix-Migrated) : 10.0.0.8
+    - OS : Windows Server 2016 Datacenter
+    - データ ディスク : なし
+    - ドメイン未参加
+    - VM サイズ : Standard_A2_v2
+- VM 用 NIC * 5
