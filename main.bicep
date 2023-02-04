@@ -19,9 +19,6 @@ param domainName string = 'contoso.local'
 @description('Resources Name Prefix')
 param resourceNamePrefix string
 
-// @description('The DNS prefix for the public IP address used by the Load Balancer')
-// param dnsPrefix string
-
 @description('Size of the VM for the controller')
 param vmSize string = 'Standard_D2s_v3'
 
@@ -45,13 +42,9 @@ var vmSubnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtua
 var bastionSubnetName = 'AzureBastionSubnet'
 var bastionSubnet = '10.0.1.0/24'
 var bastionSubnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, bastionSubnetName)
-// var publicIPSKU = 'Standard'
 var publicIpName = '${resourceNamePrefix}-bastion-ip'
 var bastionHostName = '${resourceNamePrefix}-bastion'
-// var publicIPAddressType = 'Static'
-// var publicIpAddressId = {
-//   id: publicIPAddressName.id
-// }
+
 
 var vmName = '${resourceNamePrefix}-DC'
 var nicName = '${resourceNamePrefix}-DC-Nic'
@@ -68,27 +61,6 @@ var nicName3 = '${resourceNamePrefix}-BKSvr-Nic'
 var ipAddressVm3 = '10.0.0.6'
 param vmSize3 string = 'Standard_D2s_v3'
 
-
-// var adBDCConfigurationModulesURL = uri(_artifactsLocation, 'DSC/ConfigureADBDC.ps1.zip')
-// var adBDCConfigurationScript = 'ConfigureADBDC.ps1'
-// var adBDCConfigurationFunction = 'ConfigureADBDC'
-
-// resource publicIPAddressName 'Microsoft.Network/publicIPAddresses@2020-11-01' = {
-//   name: publicIPAddressName_var
-//   location: location
-//   sku: {
-//     name: publicIPSKU
-//   }
-//   zones: [
-//     '1'
-//   ]
-//   properties: {
-//     publicIPAllocationMethod: publicIPAddressType
-//     dnsSettings: {
-//       domainNameLabel: dnsPrefix
-//     }
-//   }
-// }
 
 module CreateVNet './nestedtemplates/vnet.bicep' = {
   name: 'vNet'
@@ -148,7 +120,6 @@ resource CreateNIC 'Microsoft.Network/networkInterfaces@2022-07-01' = {
         properties: {
           privateIPAllocationMethod: 'Static'
           privateIPAddress: ipAddressPDC
-          // publicIPAddress: ((i == 0) ? publicIpAddressId : json('null'))
           subnet: {
             id: vmSubnetRef
           }
@@ -239,33 +210,6 @@ resource CreateAdForest 'Microsoft.Compute/virtualMachines/extensions@2020-12-01
   }
 }
 
-// resource vmName_1_PepareBDC 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = {
-//   name: '${vmName[1]}/PepareBDC'
-//   location: location
-//   properties: {
-//     publisher: 'Microsoft.Powershell'
-//     type: 'DSC'
-//     typeHandlerVersion: '2.24'
-//     autoUpgradeMinorVersion: true
-//     settings: {
-//       configuration: {
-//         url: uri(_artifactsLocation, 'DSC/PrepareADBDC.ps1.zip')
-//         script: 'PrepareADBDC.ps1'
-//         function: 'PrepareADBDC'
-//       }
-//       configurationArguments: {
-//         DNSServer: ipAddress[0]
-//       }
-//     }
-//     protectedSettings: {
-//       configurationUrlSasToken: artifactsLocationSasToken
-//     }
-//   }
-//   dependsOn: [
-//     vmName
-//   ]
-// }
-
 module UpdateVNetDNS1 './nestedtemplates/vnet.bicep' = {
   name: 'UpdateVNetDNS1'
   params: {
@@ -282,68 +226,8 @@ module UpdateVNetDNS1 './nestedtemplates/vnet.bicep' = {
   }
   dependsOn: [
     CreateAdForest
-    // vmName_1_PepareBDC
   ]
 }
-
-// module UpdateBDCNIC './nestedtemplates/nic.bicep' = {
-//   name: 'UpdateBDCNIC'
-//   params: {
-//     nicName: nicName[1]
-//     ipConfigurations: [
-//       {
-//         name: 'ipconfig1'
-//         properties: {
-//           privateIPAllocationMethod: 'Static'
-//           privateIPAddress: ipAddress[1]
-//           subnet: {
-//             id: SubnetRef
-//           }
-//         }
-//       }
-//     ]
-//     dnsServers: [
-//       ipAddress[0]
-//     ]
-//     location: location
-//   }
-//   dependsOn: [
-//     UpdateVNetDNS1
-//   ]
-// }
-
-// module ConfiguringBackupADDomainController './nestedtemplates/configureADBDC.bicep'  = {
-//   name: 'ConfiguringBackupADDomainController'
-//   params: {
-//     extName: '${vmName[1]}/PepareBDC'
-//     location: location
-//     adminUsername: adminUsername
-//     adminPassword: adminPassword
-//     domainName: domainName
-//     adBDCConfigurationScript: adBDCConfigurationScript
-//     adBDCConfigurationFunction: adBDCConfigurationFunction
-//     adBDCConfigurationModulesURL: adBDCConfigurationModulesURL
-//     artifactsLocationSasToken: artifactsLocationSasToken
-//   }
-//   dependsOn: [
-//     UpdateBDCNIC
-//   ]
-// }
-
-// module UpdateVNetDNS2 './nestedtemplates/vnet.bicep' = {
-//   name: 'UpdateVNetDNS2'
-//   params: {
-//     virtualNetworkName: virtualNetworkName
-//     virtualNetworkAddressRange: virtualNetworkAddressRange
-//     subnetName: SubnetName
-//     subnetRange: Subnet
-//     DNSServerAddress: ipAddress
-//     location: location
-//   }
-//   dependsOn: [
-//     ConfiguringBackupADDomainController
-//   ]
-// }
 
 resource CreateNIC2 'Microsoft.Network/networkInterfaces@2022-07-01' = {
   name: nicName2
@@ -355,7 +239,6 @@ resource CreateNIC2 'Microsoft.Network/networkInterfaces@2022-07-01' = {
         properties: {
           privateIPAllocationMethod: 'Static'
           privateIPAddress: ipAddressVm2
-          // publicIPAddress: ((i == 0) ? publicIpAddressId : json('null'))
           subnet: {
             id: vmSubnetRef
           }
@@ -448,7 +331,6 @@ resource CreateNIC3 'Microsoft.Network/networkInterfaces@2022-07-01' = {
         properties: {
           privateIPAllocationMethod: 'Static'
           privateIPAddress: ipAddressVm3
-          // publicIPAddress: ((i == 0) ? publicIpAddressId : json('null'))
           subnet: {
             id: vmSubnetRef
           }
