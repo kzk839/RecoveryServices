@@ -26,7 +26,7 @@ param resourceNamePrefix string
 param vmSize string = 'Standard_D2s_v5'
 
 @description('The location of resources such as templates and DSC modules that the script is dependent')
-param _artifactsLocation string = 'https://raw.githubusercontent.com/daveRendon/azure-quickstart-templates/master/application-workloads/active-directory/active-directory-new-domain-ha-2-dc-zones/'
+param _artifactsLocation string = 'https://raw.githubusercontent.com/kzk839/RecoveryServices/master/'
 
 @description('Auto-generated token to access _artifactsLocation')
 @secure()
