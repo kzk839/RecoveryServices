@@ -235,9 +235,6 @@ resource CreateAdForest 'Microsoft.Compute/virtualMachines/extensions@2020-12-01
       }
     }
   }
-  dependsOn: [
-    CreateVM1
-  ]
 }
 
 // resource vmName_1_PepareBDC 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = {
