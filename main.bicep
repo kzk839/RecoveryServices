@@ -25,10 +25,6 @@ param vmSize string = 'Standard_D2s_v3'
 @description('The location of resources such as templates and DSC modules that the script is dependent')
 param _artifactsLocation string = 'https://raw.githubusercontent.com/kzk839/RecoveryServices/master/'
 
-@description('dummy')
-@secure()
-param _artifactsLocationSasToken string = ''
-
 @description('Auto-generated token to access _artifactsLocation')
 @secure()
 param artifactsLocationSasToken string = ''
@@ -55,13 +51,13 @@ var ipAddressPDC = '10.0.0.4'
 var vmName2 = '${resourceNamePrefix}-RecVM1'
 var nicName2 = '${resourceNamePrefix}-RecVM1-Nic'
 var ipAddressVm2 = '10.0.0.5'
-param vmSize2 string = 'Standard_A2_v2'
+var vmSize2 = 'Standard_A2_v2'
 
 
 var vmName3 = '${resourceNamePrefix}-BKSvr'
 var nicName3 = '${resourceNamePrefix}-BKSvr-Nic'
 var ipAddressVm3 = '10.0.0.6'
-param vmSize3 string = 'Standard_D2s_v3'
+var vmSize3 = 'Standard_D2s_v3'
 
 
 module CreateVNet './nestedtemplates/vnet.bicep' = {

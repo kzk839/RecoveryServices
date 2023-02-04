@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.14.6.61914",
-      "templateHash": "8290663464178474445"
+      "templateHash": "2875106449220353025"
     }
   },
   "parameters": {
@@ -59,27 +59,12 @@
         "description": "The location of resources such as templates and DSC modules that the script is dependent"
       }
     },
-    "_artifactsLocationSasToken": {
-      "type": "securestring",
-      "defaultValue": "",
-      "metadata": {
-        "description": "dummy"
-      }
-    },
     "artifactsLocationSasToken": {
       "type": "securestring",
       "defaultValue": "",
       "metadata": {
         "description": "Auto-generated token to access _artifactsLocation"
       }
-    },
-    "vmSize2": {
-      "type": "string",
-      "defaultValue": "Standard_A2_v2"
-    },
-    "vmSize3": {
-      "type": "string",
-      "defaultValue": "Standard_D2s_v3"
     }
   },
   "variables": {
@@ -102,9 +87,11 @@
     "vmName2": "[format('{0}-RecVM1', parameters('resourceNamePrefix'))]",
     "nicName2": "[format('{0}-RecVM1-Nic', parameters('resourceNamePrefix'))]",
     "ipAddressVm2": "10.0.0.5",
+    "vmSize2": "Standard_A2_v2",
     "vmName3": "[format('{0}-BKSvr', parameters('resourceNamePrefix'))]",
     "nicName3": "[format('{0}-BKSvr-Nic', parameters('resourceNamePrefix'))]",
-    "ipAddressVm3": "10.0.0.6"
+    "ipAddressVm3": "10.0.0.6",
+    "vmSize3": "Standard_D2s_v3"
   },
   "resources": [
     {
@@ -279,7 +266,7 @@
       "location": "[parameters('location')]",
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[parameters('vmSize2')]"
+          "vmSize": "[variables('vmSize2')]"
         },
         "osProfile": {
           "computerName": "[variables('vmName2')]",
@@ -375,7 +362,7 @@
       "location": "[parameters('location')]",
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[parameters('vmSize3')]"
+          "vmSize": "[variables('vmSize3')]"
         },
         "osProfile": {
           "computerName": "[variables('vmName3')]",
