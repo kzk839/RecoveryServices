@@ -28,6 +28,8 @@ param vmSize string = 'Standard_D2s_v3'
 @description('The location of resources such as templates and DSC modules that the script is dependent')
 param _artifactsLocation string = 'https://raw.githubusercontent.com/kzk839/RecoveryServices/master/'
 
+param _artifactsLocationSasToken string = ''
+
 @description('Auto-generated token to access _artifactsLocation')
 @secure()
 param artifactsLocationSasToken string = ''
