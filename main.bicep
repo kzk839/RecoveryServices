@@ -55,6 +55,15 @@ var vmName = '${resourceNamePrefix}-DC'
 var nicName = '${resourceNamePrefix}-DC-Nic'
 var ipAddressPDC = '10.0.0.4'
 
+var vmName2 = '${resourceNamePrefix}-DC'
+var nicName = '${resourceNamePrefix}-DC-Nic'
+var ipAddressPDC = '10.0.0.4'
+
+var vmName = '${resourceNamePrefix}-DC'
+var nicName = '${resourceNamePrefix}-DC-Nic'
+var ipAddressPDC = '10.0.0.4'
+
+
 // var adBDCConfigurationModulesURL = uri(_artifactsLocation, 'DSC/ConfigureADBDC.ps1.zip')
 // var adBDCConfigurationScript = 'ConfigureADBDC.ps1'
 // var adBDCConfigurationFunction = 'ConfigureADBDC'
@@ -332,3 +341,73 @@ module UpdateVNetDNS1 './nestedtemplates/vnet.bicep' = {
 //     ConfiguringBackupADDomainController
 //   ]
 // }
+
+resource CreateNIC2 'Microsoft.Network/networkInterfaces@2022-07-01' = {
+  name: nicName
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          privateIPAllocationMethod: 'Static'
+          privateIPAddress: ipAddressPDC
+          // publicIPAddress: ((i == 0) ? publicIpAddressId : json('null'))
+          subnet: {
+            id: vmSubnetRef
+          }
+        }
+      }
+    ]
+  }
+  dependsOn: [
+    CreateVNet
+  ]
+}
+
+resource CreateMember1 'Microsoft.Compute/virtualMachines@2022-11-01' = {
+  name: vmName
+  location: location
+  properties: {
+    hardwareProfile: {
+      vmSize: vmSize
+    }
+    osProfile: {
+      computerName: vmName
+      adminUsername: adminUsername
+      adminPassword: adminPassword
+    }
+    storageProfile: {
+      imageReference: {
+        publisher: imagePublisher
+        offer: imageOffer
+        sku: imageSKU
+        version: 'latest'
+      }
+      osDisk: {
+        caching: 'ReadOnly'
+        createOption: 'FromImage'
+        managedDisk: {
+          storageAccountType: 'StandardSSD_LRS'
+        }
+      }
+      dataDisks: [
+        {
+          diskSizeGB: 64
+          lun: 0
+          createOption: 'Empty'
+        }
+      ]
+    }
+    networkProfile: {
+      networkInterfaces: [
+        {
+          id: resourceId('Microsoft.Network/networkInterfaces', nicName)
+        }
+      ]
+    }
+  }
+  dependsOn: [
+    CreateNIC
+  ]
+}
