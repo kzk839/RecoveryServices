@@ -25,6 +25,8 @@ param vmSize string = 'Standard_D2s_v3'
 @description('The location of resources such as templates and DSC modules that the script is dependent')
 param _artifactsLocation string = 'https://raw.githubusercontent.com/kzk839/RecoveryServices/master/'
 
+@description('dummy')
+@secure()
 param _artifactsLocationSasToken string = ''
 
 @description('Auto-generated token to access _artifactsLocation')
@@ -179,7 +181,7 @@ resource CreateVM1 'Microsoft.Compute/virtualMachines@2022-11-01' = {
   ]
 }
 
-resource CreateAdForest 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = {
+resource CreateAdForest 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
   parent: CreateVM1
   name: 'CreateAdForest'
   location: location
@@ -299,7 +301,7 @@ resource CreateVM2 'Microsoft.Compute/virtualMachines@2022-11-01' = {
   ]
 }
 
-resource virtualMachineExtension1 'Microsoft.Compute/virtualMachines/extensions@2021-03-01' = {
+resource virtualMachineExtension1 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
   parent: CreateVM2
   name: 'joindomain1'
   location: location
@@ -310,7 +312,6 @@ resource virtualMachineExtension1 'Microsoft.Compute/virtualMachines/extensions@
     autoUpgradeMinorVersion: true
     settings: {
       name: domainName
-      ouPath: 'OU=Computers,DC=contoso,DC=local'
       user: '${domainName}\\${adminUsername}'
       restart: true
       options: '3'
@@ -391,8 +392,8 @@ resource CreateVM3 'Microsoft.Compute/virtualMachines@2022-11-01' = {
   ]
 }
 
-resource virtualMachineExtension2 'Microsoft.Compute/virtualMachines/extensions@2021-03-01' = {
-  parent: CreateVM2
+resource virtualMachineExtension2 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
+  parent: CreateVM3
   name: 'joindomain2'
   location: location
   properties: {
@@ -402,7 +403,7 @@ resource virtualMachineExtension2 'Microsoft.Compute/virtualMachines/extensions@
     autoUpgradeMinorVersion: true
     settings: {
       name: domainName
-      ouPath: 'OU=Computers,DC=contoso,DC=local'
+      // ouPath: 'OU=Computers,DC=contoso,DC=local'
       user: '${domainName}\\${adminUsername}'
       restart: true
       options: '3'
