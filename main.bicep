@@ -55,13 +55,16 @@ var vmName = '${resourceNamePrefix}-DC'
 var nicName = '${resourceNamePrefix}-DC-Nic'
 var ipAddressPDC = '10.0.0.4'
 
-var vmName2 = '${resourceNamePrefix}-DC'
-var nicName = '${resourceNamePrefix}-DC-Nic'
-var ipAddressPDC = '10.0.0.4'
+var vmName2 = '${resourceNamePrefix}-RecVM1'
+var nicName2 = '${resourceNamePrefix}-RecVM1-Nic'
+var ipAddressVm2 = '10.0.0.5'
+param vmSize2 string = 'Standard_A2_v2'
 
-var vmName = '${resourceNamePrefix}-DC'
-var nicName = '${resourceNamePrefix}-DC-Nic'
-var ipAddressPDC = '10.0.0.4'
+
+var vmName3 = '${resourceNamePrefix}-BKSvr'
+var nicName3 = '${resourceNamePrefix}-BKSvr-Nic'
+var ipAddressVm3 = '10.0.0.6'
+param vmSize3 string = 'Standard_D2s_v5'
 
 
 // var adBDCConfigurationModulesURL = uri(_artifactsLocation, 'DSC/ConfigureADBDC.ps1.zip')
@@ -156,7 +159,7 @@ resource CreateNIC 'Microsoft.Network/networkInterfaces@2022-07-01' = {
   ]
 }
 
-resource CreatePDC 'Microsoft.Compute/virtualMachines@2022-11-01' = {
+resource CreateVM1 'Microsoft.Compute/virtualMachines@2022-11-01' = {
   name: vmName
   location: location
   properties: {
@@ -204,7 +207,8 @@ resource CreatePDC 'Microsoft.Compute/virtualMachines@2022-11-01' = {
 }
 
 resource CreateAdForest 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = {
-  name: '${vmName}/CreateAdForest'
+  parent: CreateVM1
+  name: 'CreateAdForest'
   location: location
   properties: {
     publisher: 'Microsoft.Powershell'
@@ -232,7 +236,7 @@ resource CreateAdForest 'Microsoft.Compute/virtualMachines/extensions@2020-12-01
     }
   }
   dependsOn: [
-    CreatePDC
+    CreateVM1
   ]
 }
 
@@ -343,7 +347,7 @@ module UpdateVNetDNS1 './nestedtemplates/vnet.bicep' = {
 // }
 
 resource CreateNIC2 'Microsoft.Network/networkInterfaces@2022-07-01' = {
-  name: nicName
+  name: nicName2
   location: location
   properties: {
     ipConfigurations: [
@@ -351,7 +355,7 @@ resource CreateNIC2 'Microsoft.Network/networkInterfaces@2022-07-01' = {
         name: 'ipconfig1'
         properties: {
           privateIPAllocationMethod: 'Static'
-          privateIPAddress: ipAddressPDC
+          privateIPAddress: ipAddressVm2
           // publicIPAddress: ((i == 0) ? publicIpAddressId : json('null'))
           subnet: {
             id: vmSubnetRef
@@ -365,15 +369,15 @@ resource CreateNIC2 'Microsoft.Network/networkInterfaces@2022-07-01' = {
   ]
 }
 
-resource CreateMember1 'Microsoft.Compute/virtualMachines@2022-11-01' = {
-  name: vmName
+resource CreateVM2 'Microsoft.Compute/virtualMachines@2022-11-01' = {
+  name: vmName2
   location: location
   properties: {
     hardwareProfile: {
-      vmSize: vmSize
+      vmSize: vmSize2
     }
     osProfile: {
-      computerName: vmName
+      computerName: vmName2
       adminUsername: adminUsername
       adminPassword: adminPassword
     }
@@ -393,7 +397,7 @@ resource CreateMember1 'Microsoft.Compute/virtualMachines@2022-11-01' = {
       }
       dataDisks: [
         {
-          diskSizeGB: 64
+          diskSizeGB: 128
           lun: 0
           createOption: 'Empty'
         }
@@ -402,12 +406,128 @@ resource CreateMember1 'Microsoft.Compute/virtualMachines@2022-11-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: resourceId('Microsoft.Network/networkInterfaces', nicName)
+          id: resourceId('Microsoft.Network/networkInterfaces', nicName2)
         }
       ]
     }
   }
   dependsOn: [
-    CreateNIC
+    CreateNIC2
+    UpdateVNetDNS1
   ]
+}
+
+resource virtualMachineExtension1 'Microsoft.Compute/virtualMachines/extensions@2021-03-01' = {
+  parent: CreateVM2
+  name: 'joindomain1'
+  location: location
+  properties: {
+    publisher: 'Microsoft.Compute'
+    type: 'JsonADDomainExtension'
+    typeHandlerVersion: '1.3'
+    autoUpgradeMinorVersion: true
+    settings: {
+      name: domainName
+      ouPath: 'OU=Computers,DC=contoso,DC=local'
+      user: '${domainName}\\${adminUsername}'
+      restart: true
+      options: '3'
+    }
+    protectedSettings: {
+      Password: adminPassword
+    }
+  }
+}
+
+resource CreateNIC3 'Microsoft.Network/networkInterfaces@2022-07-01' = {
+  name: nicName3
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          privateIPAllocationMethod: 'Static'
+          privateIPAddress: ipAddressVm3
+          // publicIPAddress: ((i == 0) ? publicIpAddressId : json('null'))
+          subnet: {
+            id: vmSubnetRef
+          }
+        }
+      }
+    ]
+  }
+  dependsOn: [
+    CreateVNet
+  ]
+}
+
+resource CreateVM3 'Microsoft.Compute/virtualMachines@2022-11-01' = {
+  name: vmName3
+  location: location
+  properties: {
+    hardwareProfile: {
+      vmSize: vmSize3
+    }
+    osProfile: {
+      computerName: vmName3
+      adminUsername: adminUsername
+      adminPassword: adminPassword
+    }
+    storageProfile: {
+      imageReference: {
+        publisher: imagePublisher
+        offer: imageOffer
+        sku: imageSKU
+        version: 'latest'
+      }
+      osDisk: {
+        caching: 'ReadOnly'
+        createOption: 'FromImage'
+        managedDisk: {
+          storageAccountType: 'StandardSSD_LRS'
+        }
+      }
+      dataDisks: [
+        {
+          diskSizeGB: 128
+          lun: 0
+          createOption: 'Empty'
+        }
+      ]
+    }
+    networkProfile: {
+      networkInterfaces: [
+        {
+          id: resourceId('Microsoft.Network/networkInterfaces', nicName3)
+        }
+      ]
+    }
+  }
+  dependsOn: [
+    CreateNIC3
+    UpdateVNetDNS1
+  ]
+}
+
+resource virtualMachineExtension2 'Microsoft.Compute/virtualMachines/extensions@2021-03-01' = {
+  parent: CreateVM2
+  name: 'joindomain2'
+  location: location
+  properties: {
+    publisher: 'Microsoft.Compute'
+    type: 'JsonADDomainExtension'
+    typeHandlerVersion: '1.3'
+    autoUpgradeMinorVersion: true
+    settings: {
+      name: domainName
+      ouPath: 'OU=Computers,DC=contoso,DC=local'
+      user: '${domainName}\\${adminUsername}'
+      restart: true
+      options: '3'
+    }
+    protectedSettings: {
+      Password: adminPassword
+    }
+  }
 }
