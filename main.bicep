@@ -213,7 +213,7 @@ resource CreateAdForest 'Microsoft.Compute/virtualMachines/extensions@2020-12-01
   properties: {
     publisher: 'Microsoft.Powershell'
     type: 'DSC'
-    typeHandlerVersion: '2.24'
+    typeHandlerVersion: '2.83'
     autoUpgradeMinorVersion: true
     settings: {
       configuration: {
