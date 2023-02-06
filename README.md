@@ -18,7 +18,7 @@
 - _artifacts Location : 変更不要
 - Artifacts Location Sas Token : 空欄でよい
 
-![Alt text](2023-02-04_22h26_16.png)
+<img width="574" alt="2023-02-04_22h26_16" src="https://user-images.githubusercontent.com/67820613/216857560-20a4bbb0-b46c-4d7f-bec0-f2a676e245de.png">
 
 ## 概要
 
