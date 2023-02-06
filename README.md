@@ -6,17 +6,19 @@
 
 デプロイ時に以下のパラメーターを指定
 
-- サブスクリプション : デプロイ対象のサブスクリプション
-  - リソース グループ : 任意の名前で新規作成
-- リージョン : japaneast
-- Location : japaneast
-- Admin Username : 任意のユーザー名 (OS ローカル管理者、ドメイン管理者)
-- Admin Password : 複雑性の要件を満たした任意のパスワード (メモしておくこと)
-- Domain Name : contoso.local のまま変更不要
-- Resource Name Prefix : 6 文字以下の任意の文字列だが、デプロイされるリソースのリソース名に使用されるため、他者と重複せず自分だとわかるものにする。(xxx-bastion などになる)
-- Vm Size : Standard_D2s_v3
-- _artifacts Location : 変更不要
-- Artifacts Location Sas Token : 空欄でよい
+| 項目                         | 概要                                                                                                                                               |
+|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| サブスクリプション           | デプロイ対象のサブスクリプション                                                                                                                   |
+| リソース グループ            | 任意の名前で新規作成                                                                                                                               |
+| リージョン                   | japaneast                                                                                                                                          |
+| Location                     | japaneast                                                                                                                                          |
+| Admin Username               | 任意のユーザー名 (OS ローカル管理者、ドメイン管理者)                                                                                               |
+| Admin Password               | 複雑性の要件を満たした任意のパスワード (メモしておくこと)                                                                                          |
+| Domain Name                  | contoso.local のまま変更不要                                                                                                                       |
+| Resource Name Prefix         | 6 文字以下の任意の文字列だが、デプロイされるリソースのリソース名に使用されるため、他者と重複せず自分だとわかるものにする。(xxx-bastion などになる) |
+| Vm Size                      | Standard_D2s_v3                                                                                                                                    |
+| _artifacts Location          | 変更不要                                                                                                                                           |
+| Artifacts Location Sas Token | 空欄でよい                                                                                                                                         |
 
 <img width="574" alt="2023-02-04_22h26_16" src="https://user-images.githubusercontent.com/67820613/216857560-20a4bbb0-b46c-4d7f-bec0-f2a676e245de.png">
 
