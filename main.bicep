@@ -44,6 +44,7 @@ var bastionSubnetRef = resourceId('Microsoft.Network/virtualNetworks/subnets', v
 var publicIpName = '${resourceNamePrefix}-bastion-ip'
 var bastionHostName = '${resourceNamePrefix}-bastion'
 
+var storageAccountName = '${resourceNamePrefix}${uniqueString(resourceGroup().id)}'
 
 var vmName = '${resourceNamePrefix}-DC'
 var nicName = '${resourceNamePrefix}-DC-Nic'
@@ -115,6 +116,15 @@ resource bastionHost 'Microsoft.Network/bastionHosts@2022-07-01' = {
   dependsOn: [
     CreateVNet
   ]
+}
+
+resource CreateStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+  name: storageAccountName
+  location: location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
 }
 
 

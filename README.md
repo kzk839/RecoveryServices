@@ -62,3 +62,5 @@ Recovery Services ハンズオン用の Azure リソースをデプロイ
     - ドメイン未参加
     - VM サイズ : Standard_A2_v2
 - VM 用 NIC * 5
+- キャッシュ ストレージ アカウント (prefix の後にランダムな 13 文字)
+    - SKU : Standard_LRS

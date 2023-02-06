@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.14.6.61914",
-      "templateHash": "8408810902868145019"
+      "templateHash": "13404592423994284351"
     }
   },
   "parameters": {
@@ -82,6 +82,7 @@
     "bastionSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('bastionSubnetName'))]",
     "publicIpName": "[format('{0}-bastion-ip', parameters('resourceNamePrefix'))]",
     "bastionHostName": "[format('{0}-bastion', parameters('resourceNamePrefix'))]",
+    "storageAccountName": "[format('{0}{1}', parameters('resourceNamePrefix'), uniqueString(resourceGroup().id))]",
     "vmName": "[format('{0}-DC', parameters('resourceNamePrefix'))]",
     "nicName": "[format('{0}-DC-Nic', parameters('resourceNamePrefix'))]",
     "ipAddressPDC": "10.0.0.4",
@@ -139,6 +140,16 @@
         "[resourceId('Microsoft.Resources/deployments', 'vNet')]",
         "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIpName'))]"
       ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2022-09-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2"
     },
     {
       "type": "Microsoft.Network/networkInterfaces",
