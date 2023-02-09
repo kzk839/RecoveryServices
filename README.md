@@ -64,3 +64,6 @@ Recovery Services ハンズオン用の Azure リソースをデプロイ
 - VM 用 NIC * 5
 - キャッシュ ストレージ アカウント (prefix の後にランダムな 13 文字)
     - SKU : Standard_LRS
+
+## 注意点
+Recovery Services コンテナー、ASR 対象サーバー共に東日本リージョンにデプロイされるため、東日本リージョン ⇒ 東日本リージョンでの DR テストとなる。
