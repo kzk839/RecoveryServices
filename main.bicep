@@ -55,7 +55,6 @@ var nicName2 = '${resourceNamePrefix}-RecVM1-Nic'
 var ipAddressVm2 = '10.0.0.5'
 var vmSize2 = 'Standard_A2_v2'
 
-
 var vmName3 = '${resourceNamePrefix}-BKSvr'
 var nicName3 = '${resourceNamePrefix}-BKSvr-Nic'
 var ipAddressVm3 = '10.0.0.6'
@@ -127,7 +126,6 @@ resource CreateStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   kind: 'StorageV2'
 }
 
-
 resource CreateNIC 'Microsoft.Network/networkInterfaces@2022-07-01' = {
   name: nicName
   location: location
@@ -197,6 +195,19 @@ resource CreateVM1 'Microsoft.Compute/virtualMachines@2022-11-01' = {
   ]
 }
 
+resource setScript 'Microsoft.Compute/virtualMachines/runCommands@2022-11-01' = {
+  name: 'RunCommand'
+  parent: CreateVM1
+  location: location
+  properties: {
+    asyncExecution: false
+    source: {
+      script: 'Set-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\WindowsAzureGuestAgent" -Name DependOnService -Type MultiString -Value DNS'
+    }
+    timeoutInSeconds: 30
+  }
+}
+
 resource CreateAdForest 'Microsoft.Compute/virtualMachines/extensions@2022-11-01' = {
   parent: CreateVM1
   name: 'CreateAdForest'
@@ -226,6 +237,9 @@ resource CreateAdForest 'Microsoft.Compute/virtualMachines/extensions@2022-11-01
       }
     }
   }
+  dependsOn: [
+    setScript
+  ]
 }
 
 module UpdateVNetDNS1 './nestedtemplates/vnet.bicep' = {

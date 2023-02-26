@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.14.6.61914",
-      "templateHash": "13404592423994284351"
+      "version": "0.14.46.61228",
+      "templateHash": "8532728508893283583"
     }
   },
   "parameters": {
@@ -223,6 +223,22 @@
       ]
     },
     {
+      "type": "Microsoft.Compute/virtualMachines/runCommands",
+      "apiVersion": "2022-11-01",
+      "name": "[format('{0}/{1}', variables('vmName'), 'RunCommand')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "asyncExecution": false,
+        "source": {
+          "script": "Set-ItemProperty -Path \"HKLM:\\SYSTEM\\CurrentControlSet\\Services\\WindowsAzureGuestAgent\" -Name DependOnService -Type MultiString -Value DNS"
+        },
+        "timeoutInSeconds": 30
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
+      ]
+    },
+    {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2022-11-01",
       "name": "[format('{0}/{1}', variables('vmName'), 'CreateAdForest')]",
@@ -253,7 +269,8 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]",
+        "[resourceId('Microsoft.Compute/virtualMachines/runCommands', variables('vmName'), 'RunCommand')]"
       ]
     },
     {
@@ -616,8 +633,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.14.6.61914",
-              "templateHash": "10102289968093465751"
+              "version": "0.14.46.61228",
+              "templateHash": "677222984118644296"
             }
           },
           "parameters": {
@@ -746,8 +763,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.14.6.61914",
-              "templateHash": "10102289968093465751"
+              "version": "0.14.46.61228",
+              "templateHash": "677222984118644296"
             }
           },
           "parameters": {
