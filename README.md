@@ -66,4 +66,4 @@ Recovery Services ハンズオン用の Azure リソースをデプロイ
     - SKU : Standard_LRS
 
 ## 注意点
-Recovery Services コンテナー、ASR 対象サーバー共に東日本リージョンにデプロイされるため、東日本リージョン ⇒ 東日本リージョンでの DR テストとなる。
+Recovery Services コンテナー(手作業でのデプロイ)、ASR 対象サーバー共に東日本リージョンにデプロイされるため、東日本リージョン ⇒ 東日本リージョンでの DR テストとなる。
