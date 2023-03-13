@@ -537,7 +537,7 @@ resource CreateVM5 'Microsoft.Compute/virtualMachines@2022-11-01' = {
       vmSize: vmSize5
     }
     osProfile: {
-      computerName: vmName4
+      computerName: vmName5
       adminUsername: adminUsername
       adminPassword: adminPassword
     }

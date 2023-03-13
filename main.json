@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.14.46.61228",
-      "templateHash": "8532728508893283583"
+      "version": "0.14.85.62628",
+      "templateHash": "5249765687434201763"
     }
   },
   "parameters": {
@@ -563,7 +563,7 @@
           "vmSize": "[variables('vmSize5')]"
         },
         "osProfile": {
-          "computerName": "[variables('vmName4')]",
+          "computerName": "[variables('vmName5')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -633,8 +633,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.14.46.61228",
-              "templateHash": "677222984118644296"
+              "version": "0.14.85.62628",
+              "templateHash": "11142327536040674313"
             }
           },
           "parameters": {
@@ -763,8 +763,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.14.46.61228",
-              "templateHash": "677222984118644296"
+              "version": "0.14.85.62628",
+              "templateHash": "11142327536040674313"
             }
           },
           "parameters": {
